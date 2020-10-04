@@ -5,18 +5,27 @@ object Constants {
   val APP_NAME = "XGBoost-Spark"
   val SEED = 123
   val CLASSIFICATION_DATASET = "data/IrisDataset.csv"
-  val REGRESSION_DATASET = "data/AutomobileDataset.csv"
+  val REGRESSION_DATASET = "data/ServoDataset.csv"
   val CLASSIFICATION_MODEL_DIR = "model/Iris"
-  val REGRESSION_MODEL_DIR = "model/Automobile"
+  val REGRESSION_MODEL_DIR = "model/Servo"
 
-  // Colum Names.
-  val COL_1 = "sepal length"
-  val COL_2 = "sepal width"
-  val COL_3 = "petal length"
-  val COL_4 = "petal width"
-  val COL_5 = "class"
+  // Iris Dataset Column Names.
+  val CLASSIFICATION_COL_1 = "sepal length"
+  val CLASSIFICATION_COL_2 = "sepal width"
+  val CLASSIFICATION_COL_3 = "petal length"
+  val CLASSIFICATION_COL_4 = "petal width"
+  val CLASSIFICATION_COL_5 = "class"
   val FEATURE_OUTPUT_COL = "fetures"
   val LABEL_OUTPUT_COL = "classIndex"
+
+  // Servo Dataset Column Names.
+  val REGRESSION_COL_1 = "motor"
+  val REGRESSION_COL_2 = "screw"
+  val REGRESSION_COL_3 = "pgain"
+  val REGRESSION_COL_4 = "vgain"
+  val REGRESSION_COL_5 = "class"
+  val OHE_OUTPUT_COL_1 = "motor_one"
+  val OHE_OUTPUT_COL_2 = "screw_one"
 
   // XGBoost Hyperparameters.
   val ETA = 0.1f

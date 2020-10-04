@@ -4,7 +4,7 @@ import edu.missouri.Constants.Constants
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import ml.dmlc.xgboost4j.scala.spark.{XGBoostRegressionModel, XGBoostRegressor}
-import org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorAssembler}
+import org.apache.spark.ml.feature.{IndexToString, OneHotEncoderEstimator, StringIndexer, VectorAssembler}
 import org.apache.spark.sql.types.{DoubleType, StringType, StructField, StructType}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
@@ -17,11 +17,12 @@ object RegressionPipeline {
 
     // Defining the data schema.
     val schema = new StructType(Array(
-      StructField(Constants.COL_1, DoubleType, true),
-      StructField(Constants.COL_2, DoubleType, true),
-      StructField(Constants.COL_3, DoubleType, true),
-      StructField(Constants.COL_4, DoubleType, true),
-      StructField(Constants.COL_5, StringType, true)))
+      StructField(Constants.REGRESSION_COL_1, StringType, true),
+      StructField(Constants.REGRESSION_COL_2, StringType, true),
+      StructField(Constants.REGRESSION_COL_3, DoubleType, true),
+      StructField(Constants.REGRESSION_COL_4, DoubleType, true),
+      StructField(Constants.REGRESSION_COL_5, DoubleType, true)
+    ))
 
     // Loading the data.
     val inputData = spark.read.schema(schema).csv(Constants.REGRESSION_DATASET)
@@ -32,14 +33,14 @@ object RegressionPipeline {
     // Building the ML Pipeline - Start
     // 1) Assembling all features into a single vector column.
     val assembler = new VectorAssembler()
-      .setInputCols(Array(Constants.COL_1, Constants.COL_2, Constants.COL_3, Constants.COL_4))
+      .setInputCols(Array(Constants.CLASSIFICATION_COL_1, Constants.CLASSIFICATION_COL_2, Constants.CLASSIFICATION_COL_3, Constants.CLASSIFICATION_COL_4))
       .setOutputCol(Constants.FEATURE_OUTPUT_COL)
 
-    // 2) Converting string labels to indexed double label.
-    val labelIndexer = new StringIndexer()
-      .setInputCol(Constants.COL_5)
-      .setOutputCol(Constants.LABEL_OUTPUT_COL)
-      .fit(train)
+    // 2) Performing One Hot Encoding.
+    val oneHotEncoder = new OneHotEncoderEstimator().
+      setInputCols(Array(Constants.REGRESSION_COL_1, Constants.REGRESSION_COL_2))
+      .setOutputCols(Array(Constants.OHE_OUTPUT_COL_1, Constants.OHE_OUTPUT_COL_1))
+      .setDropLast(false)
 
     // 3) Using XGBoostRegressor to train the regression model.
     val booster = new XGBoostRegressor(
@@ -55,14 +56,8 @@ object RegressionPipeline {
     booster.setFeaturesCol(Constants.FEATURE_OUTPUT_COL)
     booster.setLabelCol(Constants.LABEL_OUTPUT_COL)
 
-    // 4) Converting the label back to the original string label.
-    val labelConverter = new IndexToString()
-      .setInputCol(Constants.PREDICTION)
-      .setOutputCol(Constants.LABEL)
-      .setLabels(labelIndexer.labels)
-
     // Pipeline with the sequence of stages
-    val pipeline = new Pipeline().setStages(Array(assembler, labelIndexer, booster, labelConverter))
+    val pipeline = new Pipeline().setStages(Array(assembler, oneHotEncoder, booster))
 
     // Building the ML Pipeline - End
 

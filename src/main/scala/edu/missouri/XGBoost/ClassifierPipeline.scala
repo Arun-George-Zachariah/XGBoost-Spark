@@ -17,11 +17,11 @@ object ClassifierPipeline {
 
     // Defining the data schema.
     val schema = new StructType(Array(
-      StructField(Constants.COL_1, DoubleType, true),
-      StructField(Constants.COL_2, DoubleType, true),
-      StructField(Constants.COL_3, DoubleType, true),
-      StructField(Constants.COL_4, DoubleType, true),
-      StructField(Constants.COL_5, StringType, true)))
+      StructField(Constants.CLASSIFICATION_COL_1, DoubleType, true),
+      StructField(Constants.CLASSIFICATION_COL_2, DoubleType, true),
+      StructField(Constants.CLASSIFICATION_COL_3, DoubleType, true),
+      StructField(Constants.CLASSIFICATION_COL_4, DoubleType, true),
+      StructField(Constants.CLASSIFICATION_COL_5, StringType, true)))
 
     // Loading the data.
     val inputData = spark.read.schema(schema).csv(Constants.CLASSIFICATION_DATASET)
@@ -32,12 +32,12 @@ object ClassifierPipeline {
     // Building the ML Pipeline - Start
     // 1) Assembling all features into a single vector column.
     val assembler = new VectorAssembler()
-      .setInputCols(Array(Constants.COL_1, Constants.COL_2, Constants.COL_3, Constants.COL_4))
+      .setInputCols(Array(Constants.CLASSIFICATION_COL_1, Constants.CLASSIFICATION_COL_2, Constants.CLASSIFICATION_COL_3, Constants.CLASSIFICATION_COL_4))
       .setOutputCol(Constants.FEATURE_OUTPUT_COL)
 
     // 2) Converting string labels to indexed double label.
     val labelIndexer = new StringIndexer()
-      .setInputCol(Constants.COL_5)
+      .setInputCol(Constants.CLASSIFICATION_COL_5)
       .setOutputCol(Constants.LABEL_OUTPUT_COL)
       .fit(train)
 
