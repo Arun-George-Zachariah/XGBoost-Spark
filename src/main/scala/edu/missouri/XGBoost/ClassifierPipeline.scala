@@ -1,5 +1,6 @@
 package edu.missouri.XGBoost
 
+import edu.missouri.Constants.Constants
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import ml.dmlc.xgboost4j.scala.spark.{XGBoostClassificationModel, XGBoostClassifier}
@@ -8,7 +9,7 @@ import org.apache.spark.sql.types.{DoubleType, StringType, StructField, StructTy
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
 
-object XGBoostPipeline {
+object ClassifierPipeline {
   def main(args: Array[String]): Unit = {
 
     // Creating the spark session, which is the entry point for any Spark progarm dealing with a data frame.
@@ -23,7 +24,7 @@ object XGBoostPipeline {
       StructField(Constants.COL_5, StringType, true)))
 
     // Loading the data.
-    val inputData = spark.read.schema(schema).csv(Constants.DATA_FILE)
+    val inputData = spark.read.schema(schema).csv(Constants.CLASSIFICATION_DATASET)
 
     // Splitting the dataset into test and train directories.
     val Array(train, test) = inputData.randomSplit(Array(0.8, 0.2), Constants.SEED)
@@ -72,9 +73,7 @@ object XGBoostPipeline {
     val predict = model.transform(test)
 
     // Evaluating the model and computing the accuracy.
-    val evaluator = new MulticlassClassificationEvaluator()
-    evaluator.setLabelCol(Constants.LABEL_OUTPUT_COL)
-    evaluator.setPredictionCol(Constants.PREDICTION)
+    val evaluator = new MulticlassClassificationEvaluator().setLabelCol(Constants.LABEL_OUTPUT_COL).setPredictionCol(Constants.PREDICTION)
     val accuracy = evaluator.evaluate(predict)
     println("The model accuracy is : " + accuracy)
 
@@ -87,7 +86,7 @@ object XGBoostPipeline {
       .setEstimator(pipeline)
       .setEvaluator(evaluator)
       .setEstimatorParamMaps(paramGrid)
-      .setNumFolds(3)
+      .setNumFolds(Constants.CV_FOLDS)
 
     // Training the model.
     val cvModel = cv.fit(train)
@@ -97,10 +96,10 @@ object XGBoostPipeline {
     println("The training summary of best XGBoostClassificationModel : " + bestModel.summary)
 
     // Saving the best model.
-    model.write.overwrite().save(Constants.MODEL_DIR)
+    model.write.overwrite().save(Constants.CLASSIFICATION_MODEL_DIR)
 
     // Load a saved model and serving
-    val model2 = PipelineModel.load(Constants.MODEL_DIR)
+    val model2 = PipelineModel.load(Constants.CLASSIFICATION_MODEL_DIR)
     model2.transform(test).show(false)
   }
 }
