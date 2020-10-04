@@ -3,7 +3,7 @@ package edu.missouri.XGBoost
 object Constants {
   // Generic Constants.
   val APP_NAME = "XGBoost-Spark"
-  val DATA_DIR = "data"
+  val DATA_FILE = "data/dataset.csv"
   val SEED = 123
   val MODEL_DIR = "data"
 

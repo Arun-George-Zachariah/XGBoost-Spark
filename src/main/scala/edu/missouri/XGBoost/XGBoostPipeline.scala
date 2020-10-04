@@ -23,7 +23,7 @@ object XGBoostPipeline {
       StructField(Constants.COL_5, StringType, true)))
 
     // Loading the data.
-    val inputData = spark.read.schema(schema).csv(Constants.DATA_DIR)
+    val inputData = spark.read.schema(schema).csv(Constants.DATA_FILE)
 
     // Splitting the dataset into test and train directories.
     val Array(train, test) = inputData.randomSplit(Array(0.8, 0.2), Constants.SEED)
