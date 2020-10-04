@@ -22,8 +22,8 @@ object Constants {
   val OBJECTIVE = "multi:softprob"
   val NUM_CLASS = 3
   val NUM_ROUND = 100
-  val NUM_WORKERS = "auto"
-  val TREE_METHOD = 2
+  val TREE_METHOD = "auto"
+  val NUM_WORKERS = 2
 
   // Label Converter Constants
   val PREDICTION = "prediction"
