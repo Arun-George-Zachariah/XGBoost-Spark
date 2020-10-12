@@ -45,7 +45,7 @@ object ClassifierPipeline {
     val booster = new XGBoostClassifier(
       Map("eta" -> Constants.ETA,
         "max_depth" -> Constants.MAX_DEPTH,
-        "objective" -> Constants.OBJECTIVE,
+        "objective" -> Constants.CLASSIFICATION_OBJECTIVE,
         "num_class" -> Constants.NUM_CLASS,
         "num_round" -> Constants.NUM_ROUND,
         "num_workers" -> Constants.NUM_WORKERS,

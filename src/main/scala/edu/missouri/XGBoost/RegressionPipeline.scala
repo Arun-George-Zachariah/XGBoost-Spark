@@ -4,7 +4,7 @@ import edu.missouri.Constants.Constants
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import ml.dmlc.xgboost4j.scala.spark.{XGBoostRegressionModel, XGBoostRegressor}
-import org.apache.spark.ml.feature.{IndexToString, OneHotEncoderEstimator, StringIndexer, VectorAssembler}
+import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer, VectorAssembler}
 import org.apache.spark.sql.types.{DoubleType, StringType, StructField, StructType}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
@@ -31,33 +31,37 @@ object RegressionPipeline {
     val Array(train, test) = inputData.randomSplit(Array(0.8, 0.2), Constants.SEED)
 
     // Building the ML Pipeline - Start
-    // 1) Assembling all features into a single vector column.
-    val assembler = new VectorAssembler()
-      .setInputCols(Array(Constants.CLASSIFICATION_COL_1, Constants.CLASSIFICATION_COL_2, Constants.CLASSIFICATION_COL_3, Constants.CLASSIFICATION_COL_4))
-      .setOutputCol(Constants.FEATURE_OUTPUT_COL)
+    // 1) Converting string labels to indexed double label
+    val stringIndexer = new StringIndexer()
+      .setInputCols(Array(Constants.REGRESSION_COL_1, Constants.REGRESSION_COL_2))
+      .setOutputCols(Array(Constants.REGRESSION_COL_1 + Constants.INDEX_COL, Constants.REGRESSION_COL_2 + Constants.INDEX_COL))
 
     // 2) Performing One Hot Encoding.
-    val oneHotEncoder = new OneHotEncoderEstimator().
-      setInputCols(Array(Constants.REGRESSION_COL_1, Constants.REGRESSION_COL_2))
-      .setOutputCols(Array(Constants.OHE_OUTPUT_COL_1, Constants.OHE_OUTPUT_COL_1))
+    val oneHotEncoder = new OneHotEncoder()
+      .setInputCols(Array(Constants.REGRESSION_COL_1 + Constants.INDEX_COL, Constants.REGRESSION_COL_2 + Constants.INDEX_COL))
+      .setOutputCols(Array(Constants.REGRESSION_COL_1 + Constants.OHE_COL, Constants.REGRESSION_COL_2 + Constants.OHE_COL))
       .setDropLast(false)
 
-    // 3) Using XGBoostRegressor to train the regression model.
+    // 3) Assembling all features into a single vector column.
+    val assembler = new VectorAssembler()
+      .setInputCols(Array(Constants.REGRESSION_COL_1 + Constants.INDEX_COL, Constants.REGRESSION_COL_2 + Constants.INDEX_COL, Constants.REGRESSION_COL_3, Constants.REGRESSION_COL_4))
+      .setOutputCol(Constants.FEATURE_OUTPUT_COL)
+
+    // 4) Using XGBoostRegressor to train the regression model.
     val booster = new XGBoostRegressor(
       Map("eta" -> Constants.ETA,
         "max_depth" -> Constants.MAX_DEPTH,
-        "objective" -> Constants.OBJECTIVE,
-        "num_class" -> Constants.NUM_CLASS,
+        "objective" -> Constants.REGRESSION_OBJECTIVE,
         "num_round" -> Constants.NUM_ROUND,
         "num_workers" -> Constants.NUM_WORKERS,
         "tree_method" -> Constants.TREE_METHOD
       )
     )
     booster.setFeaturesCol(Constants.FEATURE_OUTPUT_COL)
-    booster.setLabelCol(Constants.LABEL_OUTPUT_COL)
+    booster.setLabelCol(Constants.REGRESSION_COL_5)
 
     // Pipeline with the sequence of stages
-    val pipeline = new Pipeline().setStages(Array(assembler, oneHotEncoder, booster))
+    val pipeline = new Pipeline().setStages(Array(stringIndexer, oneHotEncoder, assembler, booster))
 
     // Building the ML Pipeline - End
 
@@ -68,7 +72,7 @@ object RegressionPipeline {
     val predict = model.transform(test)
 
     // Evaluating the model and computing the accuracy.
-    val evaluator = new RegressionEvaluator().setLabelCol(Constants.LABEL_OUTPUT_COL).setPredictionCol(Constants.PREDICTION)
+    val evaluator = new RegressionEvaluator().setLabelCol(Constants.REGRESSION_COL_5).setPredictionCol(Constants.PREDICTION)
     val accuracy = evaluator.evaluate(predict)
     println("The model accuracy is : " + accuracy)
 

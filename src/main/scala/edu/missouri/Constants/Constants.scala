@@ -24,13 +24,14 @@ object Constants {
   val REGRESSION_COL_3 = "pgain"
   val REGRESSION_COL_4 = "vgain"
   val REGRESSION_COL_5 = "class"
-  val OHE_OUTPUT_COL_1 = "motor_one"
-  val OHE_OUTPUT_COL_2 = "screw_one"
+  val INDEX_COL = "_index"
+  val OHE_COL = "_ohe"
 
   // XGBoost Hyperparameters.
   val ETA = 0.1f
   val MAX_DEPTH = 2
-  val OBJECTIVE = "multi:softprob"
+  val CLASSIFICATION_OBJECTIVE = "multi:softprob"
+  val REGRESSION_OBJECTIVE = "reg:squarederror"
   val NUM_CLASS = 3
   val NUM_ROUND = 100
   val TREE_METHOD = "auto"
