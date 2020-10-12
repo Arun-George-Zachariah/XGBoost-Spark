@@ -24,9 +24,9 @@ sudo apt-get update
 sudo apt-get install sbt
 
 # Setting up Spark.
-cd $HOME && wget https://archive.apache.org/dist/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
-tar -xvf spark-2.4.5-bin-hadoop2.7.tgz
+cd $HOME && wget https://archive.apache.org/dist/spark/spark-3.0.1/spark-3.0.1-bin-hadoop2.7.tgz
+tar -xvf spark-3.0.1-bin-hadoop2.7.tgz
 
 # Adding Spark to the path.
-export SPARK_HOME="$HOME/spark-2.4.5-bin-hadoop2.7"
+export SPARK_HOME="$HOME/spark-3.0.1-bin-hadoop2.7"
 export PATH="$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin"

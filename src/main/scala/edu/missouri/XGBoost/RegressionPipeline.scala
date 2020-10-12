@@ -12,7 +12,7 @@ import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
 object RegressionPipeline {
   def main(args: Array[String]): Unit = {
 
-    // Creating the spark session, which is the entry point for any Spark progarm dealing with a data frame.
+    // Creating the spark session, which is the entry point for any Spark program dealing with a data frame.
     val spark = SparkSession.builder().appName(Constants.APP_NAME).getOrCreate();
 
     // Defining the data schema.
