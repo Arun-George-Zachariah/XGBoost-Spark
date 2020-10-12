@@ -29,5 +29,5 @@ spark-submit --class edu.missouri.XGBoost.RegressionPipeline target/scala-2.12/X
 * [XGBoost Documentation](https://xgboost.readthedocs.io/en/latest/jvm/xgboost4j_spark_tutorial.html)
 * [DMLC XGBoost ](https://github.com/dmlc/xgboost/blob/master/jvm-packages/xgboost4j-example/src/main/scala/ml/dmlc/xgboost4j/scala/example/spark/SparkMLlibPipeline.scala)
 * [XGBoost Regression with Spark DataFrames](https://docs.databricks.com/_static/notebooks/xgboost-regression.html)
-* [Automobile Dataset](https://archive.ics.uci.edu/ml/datasets/Automobile)
+* [Servo Dataset](https://archive.ics.uci.edu/ml/datasets/Servo)
 * [Iris Dataset](https://archive.ics.uci.edu/ml/datasets/Iris)

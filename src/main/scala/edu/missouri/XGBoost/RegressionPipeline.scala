@@ -91,7 +91,7 @@ object RegressionPipeline {
     val cvModel = cv.fit(train)
 
     // Obtaining the best model.
-    val bestModel = cvModel.bestModel.asInstanceOf[PipelineModel].stages(2).asInstanceOf[XGBoostRegressionModel]
+    val bestModel = cvModel.bestModel.asInstanceOf[PipelineModel].stages(3).asInstanceOf[XGBoostRegressionModel]
     println("The training summary of best XGBoostRegressionModel : " + bestModel.summary)
 
     // Saving the best model.
